@@ -1,4 +1,4 @@
-# Geosptial_Data_Downloader
+# Geospatial_Data_Downloader
 A simple python script to download geospatial data from the internet. The script is designed to download data from the following sources:
 - DEM
   - [COPERNICUS DEM](https://panda.copernicus.eu/panda)
