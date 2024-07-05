@@ -7,4 +7,4 @@ A simple python script to download geospatial data from the internet. The script
 - Land Use/Land Cover
   - [GLC_FCS30](https://data.casearth.cn/en/sdo/detail/64d0950d08415d6cdb033018)
 - Satellite Imagery
-  - [Google Map Tiles]()
+  - [Google Map Tiles](https://www.google.com/maps)
