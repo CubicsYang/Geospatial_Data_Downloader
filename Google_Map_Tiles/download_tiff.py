@@ -24,16 +24,16 @@ def build_url(x, y, z):
 def download(x, y, z, path):
     url = build_url(x, y, z)
 
-    path = path + "\\{z}\\{x}\\".format(z=z, x=x)
+    path = path + "/{z}/{x}/".format(z=z, x=x)
     if not os.path.exists(path):
         os.makedirs(path)
-    filepath = path + "\\{y}.png".format(y=y)
+    filepath = path + "/{y}.png".format(y=y)
     if os.path.exists(filepath) and os.path.getsize(filepath) > 400:
         print("skip")
         pass
     else:
         for x in range(0, 3):
-            response = requests.get(url)
+            response = requests.get(url,verify=False)
             if response.status_code == 200:
                 with open(filepath, "wb") as f:
                     f.write(response.content)
@@ -76,15 +76,16 @@ def merge(x1, y1, x2, y2, z, path):
     for i in range(x1, x2 + 1):
         col_list = list()
         for j in range(y1, y2 + 1):
-            col_list.append(cv2.imread(path + "\\{z}\\{i}\\{j}.jpg".format(i=i, j=j, z=z)))
+            filepath = r"/Users/cubics/Geospatial_Data_Downloader/Google_Map_Tiles/data/{z}/{i}/{j}.jpg".format(i=i, j=j, z=z)
+            col_list.append(cv2.imread(filepath))
         k = np.vstack(col_list)
         row_list.append(k)
     result = np.hstack(row_list)
-    cv2.imwrite(path + "//merge.png", result)
+    cv2.imwrite('/Users/cubics/Geospatial_Data_Downloader/Google_Map_Tiles/data/merge.png', result)
 
 
 def main(lt_lon, lt_lat, rb_lon, rb_lat, z=15):
-    path = r"./Data"
+    path = '/Users/cubics/Geospatial_Data_Downloader/Google_Map_Tiles/data'
     point_lt = Point(lt_lon, lt_lat)
     point_rb = Point(rb_lon, rb_lat)
 
