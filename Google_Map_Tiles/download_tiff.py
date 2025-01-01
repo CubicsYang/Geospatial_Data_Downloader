@@ -3,7 +3,8 @@ import os
 import requests
 import cv2
 import numpy as np
-
+import warnings
+warnings.filterwarnings("ignore")
 
 class Point:
     def __init__(self, lon, lat):
@@ -81,11 +82,11 @@ def merge(x1, y1, x2, y2, z, path):
         k = np.vstack(col_list)
         row_list.append(k)
     result = np.hstack(row_list)
-    cv2.imwrite('/Users/cubics/Geospatial_Data_Downloader/Google_Map_Tiles/data/merge.png', result)
+    cv2.imwrite('/Users/cubics/Geospatial_Data_Downloader/Google_Map_Tiles/data/merge_2.png', result)
 
 
 def main(lt_lon, lt_lat, rb_lon, rb_lat, z=15):
-    path = '/Users/cubics/Geospatial_Data_Downloader/Google_Map_Tiles/data'
+    path = '/Users/cubics/Geospatial_Data_Downloader/Google_Map_Tiles/data/16'
     point_lt = Point(lt_lon, lt_lat)
     point_rb = Point(rb_lon, rb_lat)
 
@@ -95,15 +96,15 @@ def main(lt_lon, lt_lat, rb_lon, rb_lat, z=15):
     print(x2, y2, z)
     count = 0
     all = (x2 - x1 + 1) * (y2 - y1 + 1)
-    for i in range(x1, x2 + 1):
-        for j in range(y1, y2 + 1):
-            download(i, j, z, path)
-            count += 1
-            print("{m}/{n}".format(m=count, n=all))
-            pass
-    merge(x1, y1, x2, y2, z, path)
+    # for i in range(x1, x2 + 1):
+    #     for j in range(y1, y2 + 1):
+    #         download(i, j, z, path)
+    #         count += 1
+    #         print("{m}/{n}".format(m=count, n=all))
+    #         pass
+    # merge(x1, y1, x2, y2, z, path)
     lt, rb = cal_tiff_box(x1, y1, x2, y2, z)
-    cmd = "gdal_translate.exe -of GTiff -a_srs EPSG:4326 -a_ullr {p1_lon} " \
+    cmd = "gdal_translate -of GTiff -a_srs EPSG:4326 -a_ullr {p1_lon} " \
           "{p1_lat} {p2_lon} {p2_lat}" \
           " {input} {output}".format(p1_lon=lt.lon, p1_lat=lt.lat, p2_lon=rb.lon, p2_lat=rb.lat,
                                      input='/'.join(path.split('\\')) + "/merge.png",
