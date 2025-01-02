@@ -20,12 +20,14 @@ A simple python script to download geospatial data from the internet. These scri
 # using Opentopography.py
 south, north, west, east = 50, 50.1, 14.35, 14.6
 globaldem_downloader = Opentopography_downloader(dem_type='globaldem')
+#'SRTMGL1', 'SRTMGL3', 'SRTMGL1_E', 'AW3D30', 'AW3D30_E', 'SRTM15Plus', 'NASADEM', 'COP30','COP90', 'EU_DTM', 'GEDI_L3', 'GEBCOIceTopo', 'GEBCOSubIceTopo'
 globaldem_downloader.download_global_DEM(south, north, west, east, datasetName='SRTMGL1')
 ```
 ## Download multi-source DEM
 ```python
 # using Opentopography.py
 south, north, west, east = 50, 50.1, 14.35, 14.6
+#['SRTMGL1', 'SRTMGL3', 'SRTMGL1_E', 'AW3D30', 'AW3D30_E', 'SRTM15Plus', 'NASADEM', 'COP30','COP90', 'EU_DTM', 'GEDI_L3', 'GEBCOIceTopo', 'GEBCOSubIceTopo']
 globaldem_downloader = Opentopography_downloader(dem_type='globaldem')
 globaldem_downloader.download_global_DEMs(south, north, west, east)
 ```
@@ -33,15 +35,19 @@ globaldem_downloader.download_global_DEMs(south, north, west, east)
 ```python
 # using Opentopography.py
 south, north, west, east = 40.234, 40.24, -105.234, -105.223
+
 Your_API_Key = 'Your_API_Key'
 usgsdem_downloader = Opentopography_downloader(dem_type='usgsdem',api_key=f'{Your_API_Key}')
+# batch download
+# ['USGS30m', 'USGS10m', 'USGS1m']
 usgsdem_downloader.download_usgs_DEMs(south, north, west, east)
+# single download
+# 'USGS30m', 'USGS10m', 'USGS1m'
 usgsdem_downloader.download_usgs_DEM(south, north, west, east, datasetName='USGS10m')
 ```
 ## Download Google Map Tiles
 ```python
 # using GoogleMap.py
-south, north, west, east = 40.234, 40.24, -105.234, -105.223
 left, top = 14.35, 50.1
 right, bottom = 14.6, 50
 google_map_downloader.download_google_satellite(left, top, right, bottom, zoom=12, max_workers=4, merge=True)

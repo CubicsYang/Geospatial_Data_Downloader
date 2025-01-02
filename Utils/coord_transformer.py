@@ -5,6 +5,21 @@ import sys
 
 ## Class to transform coordinates between different coordinate systems
 class CoordProjector:
+    """
+    A class used to project coordinates from one coordinate reference system (CRS) to another.
+    Attributes
+    ----------
+    proj_from : pyproj.Proj
+        The source coordinate reference system in EPSG format.
+    proj_to : pyproj.Proj
+        The target coordinate reference system in EPSG format.
+    Methods
+    -------
+    transform_coords(x, y)
+        Transforms coordinates from the source CRS to the target CRS.
+    round_coords(lon, lat, decimals=0)
+        Rounds the transformed coordinates to a specified number of decimal places.
+    """
 
     def __init__(self, proj_from='epsg:3857', proj_to='epsg:4326'):
         if not proj_from.startswith('epsg:'):
@@ -24,6 +39,17 @@ class CoordProjector:
 
 ## Class to transform coordinates between web tile index and lon/lat
 class CoordTransformer:
+    """
+    A class used to transform geographic coordinates.
+
+    Methods
+    -------
+    lonlat2xyz(lon, lat, zoom)
+        Converts longitude and latitude to tile x, y coordinates at a given zoom level.
+
+    xyz2lonlat(x, y, zoom)
+        Converts tile x, y coordinates at a given zoom level to longitude and latitude.
+    """
 
     def __init__(self):
         self.transformer = CoordProjector()
@@ -42,6 +68,29 @@ class CoordTransformer:
         return lon, lat
 
 class ProjectionDefiner:
+    """
+    A class to define the projection of a geospatial dataset using GDAL.
+    Attributes:
+    -----------
+    proj_to : str
+        The target projection in EPSG format (e.g., 'epsg:4326').
+    input_file : str
+        The path to the input file.
+    output_file : str
+        The path to the output file.
+    left : float
+        The longitude of the left boundary.
+    top : float
+        The latitude of the top boundary.
+    right : float
+        The longitude of the right boundary.
+    bottom : float
+        The latitude of the bottom boundary.
+    Methods:
+    --------
+    define_projection():
+        Defines the projection of the input file and saves it to the output file.
+    """
     
     def __init__(self, proj_to, input_file, output_file, x1, y1, x2, y2,zoom):
         self.proj_to = proj_to 

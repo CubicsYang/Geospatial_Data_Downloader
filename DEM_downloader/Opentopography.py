@@ -4,6 +4,39 @@ import sys
 from tqdm import tqdm
 
 class Opentopography_downloader:
+    """
+    A class to download Digital Elevation Models (DEMs) from OpenTopography.
+    Attributes:
+    -----------
+    dem_type : str
+        The type of DEM to download ('globaldem' or 'usgsdem').
+    datasetName_list : list
+        List of available datasets for the specified DEM type.
+    base_url : str
+        Base URL for the OpenTopography API.
+    session : requests.Session
+        Session object for making HTTP requests.
+    api_key : str
+        API key for accessing the OpenTopography API.
+    output_dir : str
+        Directory to save the downloaded DEM files.
+    Methods:
+    --------
+    __init__(self, api_key='demoapikeyot2022', dem_type='globaldem', output_dir=r'output'):
+        Initializes the downloader with the specified API key, DEM type, and output directory.
+    get_datasetName_list(self):
+        Returns the list of available datasets for the specified DEM type.
+    file_format_extension_mappping(self, format):
+        Maps the specified file format to its corresponding file extension.
+    download_global_DEM(self, south, north, west, east, format='GTiff', datasetName='COP30'):
+        Downloads a global DEM for the specified bounding box and dataset name.
+    download_usgs_DEM(self, south, north, west, east, format='GTiff', datasetName='USGS10m'):
+        Downloads a USGS DEM for the specified bounding box and dataset name.
+    download_global_DEMs(self, south, north, west, east, format='GTiff', datasetNames=['COP30', 'SRTMGL1', 'SRTMGL3']):
+        Downloads multiple global DEMs for the specified bounding box and dataset names.
+    download_usgs_DEMs(self, south, north, west, east, format='GTiff', datasetNames=['USGS30m', 'USGS10m', 'USGS1m']):
+        Downloads multiple USGS DEMs for the specified bounding box and dataset names.
+    """
     
     def __init__(self, api_key='demoapikeyot2022', dem_type='globaldem', output_dir=r'output'):
         self.dem_type = dem_type
