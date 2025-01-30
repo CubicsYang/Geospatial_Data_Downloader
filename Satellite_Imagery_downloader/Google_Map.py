@@ -12,6 +12,28 @@ import numpy as np
 import cv2 as cv
 
 class Google_Map_downloader:
+    """
+    A class to download Google Map satellite imagery tiles and merge them into a single image.
+    Attributes:
+        map_type (str): The type of map to download. Default is 'satellite'.
+        output_dir (str): The directory to save the downloaded tiles. Default is 'output'.
+        base_url (str): The base URL for downloading satellite tiles.
+    Methods:
+        __init__(map_type='satellite', output_dir=r'output'):
+            Initializes the downloader with the specified map type and output directory.
+        get_tile(x, y, zoom=16):
+            Downloads a single tile at the specified x, y coordinates and zoom level.
+        get_tiles(x1, y1, x2, y2, zoom=16, max_workers=4):
+            Downloads multiple tiles in the specified range using a pool of workers.
+        _calculate_tile_count(x1, x2, y1, y2):
+            Calculates the total number of tiles to be downloaded in the specified range.
+        _update_pbar(pbar):
+            Updates the progress bar.
+        _merge_projection_tiles(x1, y1, x2, y2, zoom=16):
+            Merges the downloaded tiles into a single image and defines the projection.
+        download_google_satellite(left, top, right, bottom, zoom=16, max_workers=4, merge=True):
+            Downloads and optionally merges Google satellite tiles for the specified bounding box.
+    """
     def __init__(self,  map_type='satellite', output_dir=r'output'):
         self.map_type = map_type
         self.output_dir = output_dir
