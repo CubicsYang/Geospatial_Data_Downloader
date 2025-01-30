@@ -1,6 +1,7 @@
 import sys
 import os
 import Opentopography as ot
+import FABDEM as fab
 import Copernicus
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import Utils.coord_transformer as ct
