@@ -112,5 +112,4 @@ if __name__ == "__main__":
     google_map_downloader = Google_Map_downloader()
     left, top = 14.35, 50.1
     right, bottom = 14.6, 50
-    # google_map_downloader.get_tile(413299,260257,19)
     google_map_downloader.download_google_satellite(left, top, right, bottom, zoom=12, max_workers=4, merge=True)
