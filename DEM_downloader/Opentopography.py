@@ -3,7 +3,7 @@ import os
 import sys
 from tqdm import tqdm
 
-class Opentopography_downloader:
+class OpenTopographyDownloader:
     """
     A class to download Digital Elevation Models (DEMs) from OpenTopography.
     Attributes:
@@ -57,7 +57,7 @@ class Opentopography_downloader:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         
-    def get_datasetName_list(self):
+    def get_dataset_name_list(self):
         if self.dem_type == 'globaldem':
             return self.datasetName_list
         elif self.dem_type == 'usgsdem':
@@ -65,26 +65,34 @@ class Opentopography_downloader:
         else:
             print("Invalid DEM type, please choose 'globaldem' or 'usgsdem'")
             return []
+
+    # Backward-compatible alias
+    def get_datasetName_list(self):
+        return self.get_dataset_name_list()
     
-    def file_format_extension_mappping(self, format):
-        if format == 'GTiff':
+    def file_format_extension_mapping(self, output_format):
+        if output_format == 'GTiff':
             return 'tif'
-        elif format == 'HFA':
+        elif output_format == 'HFA':
             return 'img'
-        elif format == 'AAIGrid':
+        elif output_format == 'AAIGrid':
             return 'asc'
+    
+    # Backward-compatible alias (keeps original typo)
+    def file_format_extension_mappping(self, format):
+        return self.file_format_extension_mapping(format)
         
-    def download_global_DEM(self, south, north, west, east, format='GTiff', datasetName='COP30'):
-        if datasetName not in self.datasetName_list:
-            print(f"DEM type {datasetName} not supported")
+    def download_global_dem(self, south, north, west, east, output_format='GTiff', dataset_name='COP30'):
+        if dataset_name not in self.datasetName_list:
+            print(f"DEM type {dataset_name} not supported")
             return
         else:
-            url = f"{self.base_url}?demtype={datasetName}&south={south}&north={north}&west={west}&east={east}&outputFormat={format}&API_Key={self.api_key}"
+            url = f"{self.base_url}?demtype={dataset_name}&south={south}&north={north}&west={west}&east={east}&outputFormat={output_format}&API_Key={self.api_key}"
             try:
-                response = self.session.get(url)
+                response = self.session.get(url, stream=True)
                 if response.status_code == 200:
-                    file_extension = self.file_format_extension_mappping(format)
-                    filename = f"{datasetName}_{south}_{north}_{west}_{east}.{file_extension}"
+                    file_extension = self.file_format_extension_mapping(output_format)
+                    filename = f"{dataset_name}_{south}_{north}_{west}_{east}.{file_extension}"
                     output_path = os.path.join(self.output_dir, filename)
                     with open(output_path, 'wb') as f:
                             for chunk in response.iter_content(chunk_size=8192):
@@ -97,16 +105,20 @@ class Opentopography_downloader:
             except Exception as e:
                 print(f"Failed to download DEM: {e}")
 
-    def download_usgs_DEM(self, south, north, west, east, format='GTiff', datasetName='USGS10m'):
-        if datasetName not in self.datasetName_list:
-            print(f"Dataset name {datasetName} not supported")
+    # Backward-compatible alias
+    def download_global_DEM(self, south, north, west, east, format='GTiff', datasetName='COP30'):
+        self.download_global_dem(south, north, west, east, output_format=format, dataset_name=datasetName)
+
+    def download_usgs_dem(self, south, north, west, east, output_format='GTiff', dataset_name='USGS10m'):
+        if dataset_name not in self.datasetName_list:
+            print(f"Dataset name {dataset_name} not supported")
             return
         else:
-            url = f"{self.base_url}?datasetName={datasetName}&south={south}&north={north}&west={west}&east={east}&outputFormat={format}&API_Key={self.api_key}"
+            url = f"{self.base_url}?datasetName={dataset_name}&south={south}&north={north}&west={west}&east={east}&outputFormat={output_format}&API_Key={self.api_key}"
             response = self.session.get(url, stream=True)
             if response.status_code == 200:
-                file_extension = self.file_format_extension_mappping(format)
-                filename = f"{datasetName}_{south}_{north}_{west}_{east}.{file_extension}"
+                file_extension = self.file_format_extension_mapping(output_format)
+                filename = f"{dataset_name}_{south}_{north}_{west}_{east}.{file_extension}"
                 output_path = os.path.join(self.output_dir, filename)
                 with open(output_path, 'wb') as f:
                     for chunk in response.iter_content(chunk_size=8192):
@@ -116,19 +128,22 @@ class Opentopography_downloader:
             else:
                 print(f"Failed to download DEM, status code: {response.status_code}, error message: {status_code_error_message(response.status_code)}")
                 print(response.text)
-            print(f"Failed to download DEM, status code: {response.status_code}")
+
+    # Backward-compatible alias
+    def download_usgs_DEM(self, south, north, west, east, format='GTiff', datasetName='USGS10m'):
+        self.download_usgs_dem(south, north, west, east, output_format=format, dataset_name=datasetName)
             
-    def download_global_DEMs(self, south, north, west, east, format='GTiff', datasetNames=['COP30', 'SRTMGL1', 'SRTMGL3']):
-        for datasetName in tqdm(datasetNames):
-            if datasetName not in self.datasetName_list:
-                print(f"DEM type {datasetName} not supported")
+    def download_global_dems(self, south, north, west, east, output_format='GTiff', dataset_names=['COP30', 'SRTMGL1', 'SRTMGL3']):
+        for dataset_name in tqdm(dataset_names):
+            if dataset_name not in self.datasetName_list:
+                print(f"DEM type {dataset_name} not supported")
             else:
-                url = f"{self.base_url}?demtype={datasetName}&south={south}&north={north}&west={west}&east={east}&outputFormat={format}&API_Key={self.api_key}"
+                url = f"{self.base_url}?demtype={dataset_name}&south={south}&north={north}&west={west}&east={east}&outputFormat={output_format}&API_Key={self.api_key}"
                 try:
                     response = self.session.get(url, stream=True)
                     if response.status_code == 200:
-                        file_extension = self.file_format_extension_mappping(format)
-                        filename = f"{datasetName}_{south}_{north}_{west}_{east}.{file_extension}"
+                        file_extension = self.file_format_extension_mapping(output_format)
+                        filename = f"{dataset_name}_{south}_{north}_{west}_{east}.{file_extension}"
                         output_path = os.path.join(self.output_dir, filename)
                         with open(output_path, 'wb') as f:
                             for chunk in response.iter_content(chunk_size=8192):
@@ -141,17 +156,21 @@ class Opentopography_downloader:
                 except Exception as e:
                     print(f"Failed to download DEM: {e}")
 
-    def download_usgs_DEMs(self, south, north, west, east, format='GTiff', datasetNames=['USGS30m', 'USGS10m', 'USGS1m']):
-        for datasetName in tqdm(datasetNames):
-            if datasetName not in self.datasetName_list:
-                print(f"Dataset name {datasetName} not supported")
+    # Backward-compatible alias
+    def download_global_DEMs(self, south, north, west, east, format='GTiff', datasetNames=['COP30', 'SRTMGL1', 'SRTMGL3']):
+        self.download_global_dems(south, north, west, east, output_format=format, dataset_names=datasetNames)
+
+    def download_usgs_dems(self, south, north, west, east, output_format='GTiff', dataset_names=['USGS30m', 'USGS10m', 'USGS1m']):
+        for dataset_name in tqdm(dataset_names):
+            if dataset_name not in self.datasetName_list:
+                print(f"Dataset name {dataset_name} not supported")
             else:
                 try:
-                    url = f"{self.base_url}?datasetName={datasetName}&south={south}&north={north}&west={west}&east={east}&outputFormat={format}&API_Key={self.api_key}"
+                    url = f"{self.base_url}?datasetName={dataset_name}&south={south}&north={north}&west={west}&east={east}&outputFormat={output_format}&API_Key={self.api_key}"
                     response = self.session.get(url, stream=True)
                     if response.status_code == 200:
-                        file_extension = self.file_format_extension_mappping(format)
-                        filename = f"{datasetName}_{south}_{north}_{west}_{east}.{file_extension}"
+                        file_extension = self.file_format_extension_mapping(output_format)
+                        filename = f"{dataset_name}_{south}_{north}_{west}_{east}.{file_extension}"
                         output_path = os.path.join(self.output_dir, filename)
                         with open(output_path, 'wb') as f:
                             for chunk in response.iter_content(chunk_size=8192):
@@ -163,6 +182,10 @@ class Opentopography_downloader:
                         print(response.text)
                 except Exception as e:
                     print(f"Failed to download DEM: {e}")
+
+    # Backward-compatible alias
+    def download_usgs_DEMs(self, south, north, west, east, format='GTiff', datasetNames=['USGS30m', 'USGS10m', 'USGS1m']):
+        self.download_usgs_dems(south, north, west, east, output_format=format, dataset_names=datasetNames)
                     
 def status_code_error_message(status_code):
     if status_code == 400:
@@ -178,12 +201,16 @@ def status_code_error_message(status_code):
 
 if __name__ == "__main__":
     south, north, west, east = 50, 50.1, 14.35, 14.6
-    globaldem_downloader = Opentopography_downloader(dem_type='globaldem')
-    globaldem_downloader.download_global_DEMs(south, north, west, east)
-    globaldem_downloader.download_global_DEM(south, north, west, east, datasetName='SRTMGL1')
+    globaldem_downloader = OpenTopographyDownloader(dem_type='globaldem')
+    globaldem_downloader.download_global_dems(south, north, west, east)
+    globaldem_downloader.download_global_dem(south, north, west, east, dataset_name='SRTMGL1')
     south, north, west, east = 40.234, 40.24, -105.234, -105.223
     Your_API_Key = 'Your_API_Key'
-    usgsdem_downloader = Opentopography_downloader(dem_type='usgsdem',api_key=f'{Your_API_Key}')
-    usgsdem_downloader.download_usgs_DEMs(south, north, west, east)
-    usgsdem_downloader.download_usgs_DEM(south, north, west, east, datasetName='USGS10m')
+    usgsdem_downloader = OpenTopographyDownloader(dem_type='usgsdem',api_key=f'{Your_API_Key}')
+    usgsdem_downloader.download_usgs_dems(south, north, west, east)
+    usgsdem_downloader.download_usgs_dem(south, north, west, east, dataset_name='USGS10m')
+
+
+# Backward-compatible class alias
+Opentopography_downloader = OpenTopographyDownloader
     

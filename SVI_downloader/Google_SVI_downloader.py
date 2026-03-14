@@ -61,7 +61,8 @@ class Google_SVI_downloader:
                             'lat': pano.lat,
                             'lng': pano.lon,
                             'heading': pano.heading,
-                            'degree': 360 * pano.heading / (2 * math.pi),
+                            'yaw': pano.yaw,
+                            'pitch': pano.pitch,
                             'date': pano.date,
                             'location': str(pano.address[-1])})
                     else:
@@ -70,7 +71,8 @@ class Google_SVI_downloader:
                             'lat': None,
                             'lng': None,
                             'heading': None,
-                            'degree': None,
+                            'yaw': None,
+                            'pitch': None,
                             'date': None,
                             'location': None})
                 metadata = pd.DataFrame(metadata)

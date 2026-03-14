@@ -1,0 +1,32 @@
+{
+  "default_api_key": "demoapikeyot2022",
+  "tasks": {
+    "kinshasa_fabdem": {
+      "source": "fabdem",
+      "south": -4.2,
+      "north": -3.5,
+      "west": 15.7,
+      "east": 16.3,
+      "output_dir": "output"
+    },
+    "kinshasa_opentopo_global": {
+      "source": "opentopo-global",
+      "south": -4.2,
+      "north": -3.5,
+      "west": 15.7,
+      "east": 16.3,
+      "dataset": "COP30",
+      "api_key": "YOUR_OPENTOPO_API_KEY", 
+      "output_dir": "output"
+    },
+    "kinshasa_copernicus": {
+      "source": "copernicus",
+      "south": -4.2,
+      "north": -3.5,
+      "west": 15.7,
+      "east": 16.3,
+      "resolution": 30,
+      "output_dir": "output"
+    }
+  }
+}

@@ -1,26 +1,30 @@
 import os
+import subprocess
 
 class CopernicusDEMDownloader:
-    def __init__(self, save_path=r"output", resolutions=30):
+    def __init__(self, output_dir=r"output", resolution=30, save_path=None, resolutions=None):
+        if save_path is not None:
+            output_dir = save_path
+        if resolutions is not None:
+            resolution = resolutions
 
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
         if not self.check_aws_cli():
-            print("Please install AWS CLI first")
-            return
+            raise EnvironmentError("Please install AWS CLI first")
         else:
-            self.save_path = save_path
-            self.resolutions = resolutions
+            self.output_dir = output_dir
+            self.resolution = int(resolution)
+            # Backward-compatible attributes
+            self.save_path = self.output_dir
+            self.resolutions = self.resolution
             print("AWS CLI is installed")
 
     def check_aws_cli(self):
         try:
-            res = os.popen("aws --version")
-            output_str = res.read()  # 获得输出字符串
-            if "aws-cli" in output_str:
-                return True
-            else:
-                return False
+            res = subprocess.run(["aws", "--version"], check=False, capture_output=True, text=True)
+            output_str = (res.stdout or "") + (res.stderr or "")
+            return "aws-cli" in output_str
         except Exception as e:
             print(f'An exception occurred: {e}')
             return False
@@ -43,10 +47,10 @@ class CopernicusDEMDownloader:
         else:
             c_lat = "N" + str(s_lat)
         cmd = "aws s3 cp --no-sign-request" + " s3://copernicus-dem-{0}m/Copernicus_DSM_COG_{1}_{2}_00_{3}_00_DEM/ {4} --recursive".format(
-            str(self.resolutions), str(int(self.resolutions / 3)), str(c_lat), str(c_lon), self.save_path)
+            str(self.resolution), str(int(self.resolution / 3)), str(c_lat), str(c_lon), self.output_dir)
         return cmd
 
-    def get_remote_file(self, lon, lat):
+    def download_tile(self, lon, lat):
         """Get Copernicus Dem by lon and lat
 
         Args:
@@ -63,7 +67,7 @@ class CopernicusDEMDownloader:
         except Exception as e:
             print(f'An exception occurred: {e}')
 
-    def get_remote_file_batch(self, lon_min, lon_max, lat_min, lat_max):
+    def download_extent(self, lon_min, lon_max, lat_min, lat_max):
         """Get Copernicus Dems by extent 
 
         Args:
@@ -86,8 +90,15 @@ class CopernicusDEMDownloader:
                 except Exception as e:
                     print(f'An exception occurred: {e}')
 
+    # Backward-compatible aliases
+    def get_remote_file(self, lon, lat):
+        self.download_tile(lon, lat)
+
+    def get_remote_file_batch(self, lon_min, lon_max, lat_min, lat_max):
+        self.download_extent(lon_min, lon_max, lat_min, lat_max)
+
 if __name__ == "__main__":
     downloader = CopernicusDEMDownloader()
     # downloader.get_remote_file(39, 1)
-    downloader.get_remote_file_batch(-180, 180, -90, 90)
+    downloader.download_extent(-180, 180, -90, 90)
     # downloader.get_remote_file_batch(-9, 9, -90, 90)
